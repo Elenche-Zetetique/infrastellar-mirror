@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: perceptiview
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: development
+  source:
+    repoURL: git@gitlab.com:elenche-devops/son-of-argus.git
+    targetRevision: main
+    path: perceptiview
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: perceptiview
+  syncPolicy:
+    automated: 
+      prune: true
+      selfHeal: true 
+    syncOptions:
+    - CreateNamespace=true
