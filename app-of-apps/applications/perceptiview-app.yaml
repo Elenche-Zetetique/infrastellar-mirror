@@ -6,7 +6,7 @@ metadata:
   finalizers:
   - resources-finalizer.argocd.argoproj.io
 spec:
-  project: development
+  project: dev
   source:
     repoURL: git@gitlab.com:elenche-devops/son-of-argus.git
     targetRevision: main
