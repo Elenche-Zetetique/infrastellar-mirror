@@ -1086,3 +1086,4 @@ resource "kubernetes_secret_v1" "repo_2_connect_ssh_key" {
     sshPrivateKey = base64decode(var.repo_2_ssh_key)
   }
 }
+
