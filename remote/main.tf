@@ -139,6 +139,11 @@ variable "aws_lbc_helm_chart_version" {
   type        = string
 }
 
+variable "CI_PROJECT_ID" {
+  description = "Project ID"
+  type        = string
+}
+
 # Data
 data "aws_eks_cluster" "eks" {
   name = aws_eks_cluster.eks.name
@@ -174,6 +179,9 @@ terraform {
     }
   }
   backend "http" {
+    address        = "https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/terraform/state/default"
+    lock_address   = "https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/terraform/state/default/lock"
+    unlock_address = "https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/terraform/state/default/lock"
   }
 }
 

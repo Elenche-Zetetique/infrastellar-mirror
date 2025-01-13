@@ -33,7 +33,6 @@ preflight-tf-script:
   when: manual
   script:
   - cd ${TF_ROOT}
-  - echo "${TF_VAR_CI_PROJECT_ID}"
   - gitlab-terraform init
   - gitlab-terraform fmt
   - gitlab-terraform validate
