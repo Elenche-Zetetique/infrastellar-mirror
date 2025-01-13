@@ -85,5 +85,5 @@ destroy-tf-script:
   - gitlab-terraform destroy
   needs:
   - job: apply-tf-script
- environment:
-   name: $TF_STATE_NAME
+  environment:
+    name: $TF_STATE_NAME
