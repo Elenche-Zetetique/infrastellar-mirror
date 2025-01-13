@@ -5,6 +5,7 @@ stages:
 - destroy
 
 variables:
+  TF_ROOT: "/remote"
   TF_VAR_argocd_certificate: ${argocd_certificate}
   TF_VAR_argocd_helm_chart_version: ${argocd_helm_chart_version}
   TF_VAR_argocd_hostname: ${argocd_hostname}
@@ -30,6 +31,7 @@ preflight-tf-script:
   stage: preflight
   when: manual
   script:
+  - cd ${TF_ROOT}
   - gitlab-terraform fmt
   - gitlab-terraform validate
   - gitlab-terraform init
@@ -38,6 +40,7 @@ plan-tf-script:
   stage: plan
   when: manual
   script:
+  - cd ${TF_ROOT}
   - gitlab-terraform plan -out=tfplan
   needs:
   - job: preflight-tf-script
@@ -46,6 +49,7 @@ apply-tf-script:
   stage: apply
   when: manual
   script:
+  - cd ${TF_ROOT}
   - gitlab-terraform apply tfplan
   needs:
   - job: plan-tf-script
@@ -54,6 +58,7 @@ destroy-tf-script:
   stage: destroy
   when: manual
   script:
+  - cd ${TF_ROOT}
   - gitlab-terraform destroy
   needs:
   - job: apply-tf-script
