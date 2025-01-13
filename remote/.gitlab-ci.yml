@@ -32,9 +32,9 @@ preflight-tf-script:
   when: manual
   script:
   - cd ${TF_ROOT}
+  - gitlab-terraform init
   - gitlab-terraform fmt
   - gitlab-terraform validate
-  - gitlab-terraform init
 
 plan-tf-script:
   stage: plan

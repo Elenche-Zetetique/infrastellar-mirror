@@ -193,9 +193,9 @@ provider "kubernetes" {
 
 # Networking
 resource "aws_vpc" "aws-vpc" {
-  cidr_block            = "10.0.0.0/16"
-  enable_dns_support    = true
-  enable_dns_hostnames  = true
+  cidr_block           = "10.0.0.0/16"
+  enable_dns_support   = true
+  enable_dns_hostnames = true
   tags = {
     Name = "${var.env}-vpc"
   }
@@ -204,7 +204,7 @@ resource "aws_vpc" "aws-vpc" {
 resource "aws_internet_gateway" "aws-igw" {
   vpc_id = aws_vpc.aws-vpc.id
   tags = {
-	  Name = "${var.env}-igw"
+    Name = "${var.env}-igw"
   }
 }
 
@@ -213,8 +213,8 @@ resource "aws_subnet" "privateA" {
   cidr_block        = "10.0.0.0/19"
   availability_zone = local.zoneA
   tags = {
-    Name = "${var.env}-private-${local.zoneA}"
-    "kubernetes.io/role/internal-elb" = "1"
+    Name                                                             = "${var.env}-private-${local.zoneA}"
+    "kubernetes.io/role/internal-elb"                                = "1"
     "kubernetes.io/cluster/${local.env}-${var.aws_eks_cluster_name}" = "owned"
   }
 }
@@ -224,8 +224,8 @@ resource "aws_subnet" "privateB" {
   cidr_block        = "10.0.32.0/19"
   availability_zone = local.zoneB
   tags = {
-    Name = "${var.env}-private-${local.zoneB}"
-    "kubernetes.io/role/internal-elb" = "1"
+    Name                                                             = "${var.env}-private-${local.zoneB}"
+    "kubernetes.io/role/internal-elb"                                = "1"
     "kubernetes.io/cluster/${local.env}-${var.aws_eks_cluster_name}" = "owned"
   }
 }
@@ -235,8 +235,8 @@ resource "aws_subnet" "privateC" {
   cidr_block        = "10.0.64.0/19"
   availability_zone = local.zoneC
   tags = {
-    Name = "${var.env}-private-${local.zoneC}"
-    "kubernetes.io/role/internal-elb" = "1"
+    Name                                                           = "${var.env}-private-${local.zoneC}"
+    "kubernetes.io/role/internal-elb"                              = "1"
     "kubernetes.io/cluster/${var.env}-${var.aws_eks_cluster_name}" = "owned"
   }
 }
@@ -248,8 +248,8 @@ resource "aws_subnet" "publicA" {
   availability_zone       = local.zoneA
   map_public_ip_on_launch = true
   tags = {
-    Name = "${var.env}-private-${local.zoneA}"
-    "kubernetes.io/role/elb" = "1"
+    Name                                                           = "${var.env}-private-${local.zoneA}"
+    "kubernetes.io/role/elb"                                       = "1"
     "kubernetes.io/cluster/${var.env}-${var.aws_eks_cluster_name}" = "owned"
   }
 }
@@ -260,8 +260,8 @@ resource "aws_subnet" "publicB" {
   availability_zone       = local.zoneB
   map_public_ip_on_launch = true
   tags = {
-    Name = "${var.env}-private-${local.zoneB}"
-    "kubernetes.io/role/elb" = "1"
+    Name                                                           = "${var.env}-private-${local.zoneB}"
+    "kubernetes.io/role/elb"                                       = "1"
     "kubernetes.io/cluster/${var.env}-${var.aws_eks_cluster_name}" = "owned"
   }
 }
@@ -272,8 +272,8 @@ resource "aws_subnet" "publicC" {
   availability_zone       = local.zoneC
   map_public_ip_on_launch = true
   tags = {
-    Name = "${var.env}-private-${local.zoneC}"
-    "kubernetes.io/role/elb" = "1"
+    Name                                                             = "${var.env}-private-${local.zoneC}"
+    "kubernetes.io/role/elb"                                         = "1"
     "kubernetes.io/cluster/${local.env}-${var.aws_eks_cluster_name}" = "owned"
   }
 }
@@ -299,7 +299,7 @@ resource "aws_nat_gateway" "aws-nat-gw" {
 resource "aws_route_table" "aws-rt-private" {
   vpc_id = aws_vpc.aws-vpc.id
   route {
-    cidr_block = "0.0.0.0/0"
+    cidr_block     = "0.0.0.0/0"
     nat_gateway_id = aws_nat_gateway.aws-nat-gw.id
   }
   tags = {
@@ -319,33 +319,33 @@ resource "aws_route_table" "aws-rt-public" {
 }
 
 resource "aws_route_table_association" "privateA" {
-  subnet_id       = aws_subnet.privateA.id
-  route_table_id  = aws_route_table.aws-rt-private.id
+  subnet_id      = aws_subnet.privateA.id
+  route_table_id = aws_route_table.aws-rt-private.id
 }
 
 resource "aws_route_table_association" "privateB" {
-  subnet_id       = aws_subnet.privateB.id
-  route_table_id  = aws_route_table.aws-rt-private.id
+  subnet_id      = aws_subnet.privateB.id
+  route_table_id = aws_route_table.aws-rt-private.id
 }
 
 resource "aws_route_table_association" "privateC" {
-  subnet_id       = aws_subnet.privateC.id
-  route_table_id  = aws_route_table.aws-rt-private.id
+  subnet_id      = aws_subnet.privateC.id
+  route_table_id = aws_route_table.aws-rt-private.id
 }
 
 resource "aws_route_table_association" "publicA" {
-  subnet_id       = aws_subnet.publicA.id
-  route_table_id  = aws_route_table.aws-rt-public.id
+  subnet_id      = aws_subnet.publicA.id
+  route_table_id = aws_route_table.aws-rt-public.id
 }
 
 resource "aws_route_table_association" "publicB" {
-  subnet_id       = aws_subnet.publicB.id
-  route_table_id  = aws_route_table.aws-rt-public.id
+  subnet_id      = aws_subnet.publicB.id
+  route_table_id = aws_route_table.aws-rt-public.id
 }
 
 resource "aws_route_table_association" "publicC" {
-  subnet_id       = aws_subnet.publicC.id
-  route_table_id  = aws_route_table.aws-rt-public.id
+  subnet_id      = aws_subnet.publicC.id
+  route_table_id = aws_route_table.aws-rt-public.id
 }
 
 # EKS
@@ -353,11 +353,11 @@ resource "aws_iam_openid_connect_provider" "eks" {
   client_id_list  = ["sts.amazonaws.com"]
   thumbprint_list = [data.tls_certificate.eks.certificates[0].sha1_fingerprint]
   url             = aws_eks_cluster.eks.identity[0].oidc[0].issuer
-  depends_on      = [ aws_eks_cluster.eks ]
+  depends_on      = [aws_eks_cluster.eks]
 }
 
 resource "aws_iam_role" "eks" {
-  name = "${var.env}-${var.aws_eks_cluster_name}-eks-cluster"
+  name               = "${var.env}-${var.aws_eks_cluster_name}-eks-cluster"
   assume_role_policy = <<POLICY
 {
   "Version": "2012-10-17",
@@ -404,7 +404,7 @@ resource "aws_eks_cluster" "eks" {
 
 # Nodes
 resource "aws_iam_role" "nodes" {
-  name = "${var.env}-${var.aws_eks_cluster_name}-eks-nodes"
+  name               = "${var.env}-${var.aws_eks_cluster_name}-eks-nodes"
   assume_role_policy = <<POLICY
 {
   "Version": "2012-10-17",
@@ -480,15 +480,15 @@ resource "kubernetes_cluster_role" "viewer" {
   rule {
     api_groups = ["*"]
     resources = [
-      "namespaces", 
-      "pods", 
-      "configmaps", 
-      "secrets", 
+      "namespaces",
+      "pods",
+      "configmaps",
+      "secrets",
       "services"
-      ]
+    ]
     verbs = [
-      "get", 
-      "list", 
+      "get",
+      "list",
       "watch"
     ]
   }
@@ -545,8 +545,8 @@ resource "aws_iam_user" "developer" {
 }
 
 resource "aws_iam_policy" "developer_eks" {
-  count = var.create_developer_user ? 1 : 0
-  name  = "AmazonEKSDeveloperPolicy"
+  count  = var.create_developer_user ? 1 : 0
+  name   = "AmazonEKSDeveloperPolicy"
   policy = <<POLICY
 {
   "Version": "2012-10-17",
@@ -565,9 +565,9 @@ POLICY
 }
 
 resource "aws_iam_user_policy_attachment" "developer_eks" {
-  count       = var.create_developer_user ? 1 : 0
-  user        = aws_iam_user.developer[0].name
-  policy_arn  = aws_iam_policy.developer_eks[0].arn
+  count      = var.create_developer_user ? 1 : 0
+  user       = aws_iam_user.developer[0].name
+  policy_arn = aws_iam_policy.developer_eks[0].arn
 }
 
 resource "aws_eks_access_entry" "developer" {
@@ -581,8 +581,8 @@ resource "aws_eks_access_entry" "developer" {
 data "aws_caller_identity" "current" {}
 
 resource "aws_iam_role" "eks_admin" {
-  count = var.create_manager_user ? 1 : 0
-  name  = "${var.env}-${var.aws_eks_cluster_name}-eks-admin"
+  count              = var.create_manager_user ? 1 : 0
+  name               = "${var.env}-${var.aws_eks_cluster_name}-eks-admin"
   assume_role_policy = <<POLICY
 {
   "Version": "2012-10-17",
@@ -600,8 +600,8 @@ POLICY
 }
 
 resource "aws_iam_policy" "eks_admin" {
-  count = var.create_manager_user ? 1 : 0
-  name  = "AmazonEKSAdminPolicy"
+  count  = var.create_manager_user ? 1 : 0
+  name   = "AmazonEKSAdminPolicy"
   policy = <<POLICY
 {
   "Version": "2012-10-17",
@@ -629,9 +629,9 @@ POLICY
 }
 
 resource "aws_iam_role_policy_attachment" "eks_admin" {
-  count       = var.create_manager_user ? 1 : 0
-  role        = aws_iam_role.eks_admin[0].name
-  policy_arn  = aws_iam_policy.eks_admin[0].arn
+  count      = var.create_manager_user ? 1 : 0
+  role       = aws_iam_role.eks_admin[0].name
+  policy_arn = aws_iam_policy.eks_admin[0].arn
 }
 
 resource "aws_iam_user" "manager" {
@@ -640,8 +640,8 @@ resource "aws_iam_user" "manager" {
 }
 
 resource "aws_iam_policy" "eks_assume_admin" {
-  count = var.create_manager_user ? 1 : 0
-  name  = "AmazonEKSAssumeAdminPolicy"
+  count  = var.create_manager_user ? 1 : 0
+  name   = "AmazonEKSAssumeAdminPolicy"
   policy = <<POLICY
 {
   "Version": "2012-10-17",
@@ -659,9 +659,9 @@ POLICY
 }
 
 resource "aws_iam_user_policy_attachment" "manager" {
-  count       = var.create_manager_user ? 1 : 0
-  user        = aws_iam_user.manager[0].name
-  policy_arn  = aws_iam_policy.eks_assume_admin[0].arn
+  count      = var.create_manager_user ? 1 : 0
+  user       = aws_iam_user.manager[0].name
+  policy_arn = aws_iam_policy.eks_assume_admin[0].arn
 }
 
 # Best practice: use IAM roles due to temporary credentials
@@ -674,20 +674,20 @@ resource "aws_eks_access_entry" "manager" {
 
 # Metrics server
 resource "helm_release" "metrics_server" {
-  count             = var.deploy_metrics_server ? 1 : 0
-  name              = "metrics-server"
-  repository        = "https://charts.bitnami.com/bitnami"
-  chart             = "metrics-server"
-  namespace         = "metrics-server"
-  version           = "7.2.16"
-  create_namespace  = true
+  count            = var.deploy_metrics_server ? 1 : 0
+  name             = "metrics-server"
+  repository       = "https://charts.bitnami.com/bitnami"
+  chart            = "metrics-server"
+  namespace        = "metrics-server"
+  version          = "7.2.16"
+  create_namespace = true
   set {
-      name  = "apiService.create"
-      value = "true"
+    name  = "apiService.create"
+    value = "true"
   }
-  depends_on = [ 
+  depends_on = [
     aws_eks_cluster.eks,
-    aws_eks_node_group.general 
+    aws_eks_node_group.general
   ]
 }
 
@@ -722,20 +722,20 @@ data "aws_iam_policy_document" "aws_lbc" {
 }
 
 resource "aws_iam_role" "aws_lbc" {
-  count               = var.create_lbc ? 1 : 0
-  name                = "${aws_eks_cluster.eks.name}-aws-lbc"
-  assume_role_policy  = data.aws_iam_policy_document.aws_lbc[0].json
+  count              = var.create_lbc ? 1 : 0
+  name               = "${aws_eks_cluster.eks.name}-aws-lbc"
+  assume_role_policy = data.aws_iam_policy_document.aws_lbc[0].json
 }
 
 resource "aws_iam_role_policy_attachment" "aws_lbc" {
-  count       = var.create_lbc ? 1 : 0
-  role        = aws_iam_role.aws_lbc[0].name
-  policy_arn  = aws_iam_policy.aws_lbc[0].arn
+  count      = var.create_lbc ? 1 : 0
+  role       = aws_iam_role.aws_lbc[0].name
+  policy_arn = aws_iam_policy.aws_lbc[0].arn
 }
 
 resource "aws_iam_policy" "aws_lbc" {
-  count = var.create_lbc ? 1 : 0
-  name  = "AWSLoadBalancerController"
+  count  = var.create_lbc ? 1 : 0
+  name   = "AWSLoadBalancerController"
   policy = <<POLICY
 {
     "Version": "2012-10-17",
@@ -985,14 +985,14 @@ POLICY
 }
 
 resource "helm_release" "aws_lbc" {
-  count       = var.create_lbc ? 1 : 0
-  name        = "aws-load-balancer-controller"
-  repository  = "https://aws.github.io/eks-charts"
-  chart       = "aws-load-balancer-controller"
-  namespace   = "kube-system"
-  version     = var.aws_lbc_helm_chart_version
+  count      = var.create_lbc ? 1 : 0
+  name       = "aws-load-balancer-controller"
+  repository = "https://aws.github.io/eks-charts"
+  chart      = "aws-load-balancer-controller"
+  namespace  = "kube-system"
+  version    = var.aws_lbc_helm_chart_version
   values = [
-        <<-EOT
+    <<-EOT
           serviceAccount:
             create: true
             name: ${var.aws_lbc_sa}
@@ -1008,23 +1008,23 @@ resource "helm_release" "aws_lbc" {
           clusterName: ${aws_eks_cluster.eks.name}
       EOT
   ]
-  depends_on = [ 
+  depends_on = [
     aws_eks_cluster.eks,
-    aws_eks_node_group.general 
+    aws_eks_node_group.general
   ]
 }
 
 # ArgoCD
 resource "helm_release" "argocd" {
-  count             = var.create_argocd ? 1 : 0
-  name              = "argocd"
-  repository        = "https://argoproj.github.io/argo-helm"
-  chart             = "argo-cd"
-  namespace         = "argocd"
-  create_namespace  = true
-  version           = var.argocd_helm_chart_version
+  count            = var.create_argocd ? 1 : 0
+  name             = "argocd"
+  repository       = "https://argoproj.github.io/argo-helm"
+  chart            = "argo-cd"
+  namespace        = "argocd"
+  create_namespace = true
+  version          = var.argocd_helm_chart_version
   values = [
-        <<-EOT
+    <<-EOT
           global:
             domain: ${var.argocd_hostname}
 
@@ -1050,7 +1050,7 @@ resource "helm_release" "argocd" {
                 backendProtocolVersion: GRPC
       EOT
   ]
-  depends_on = [ 
+  depends_on = [
     helm_release.aws_lbc
   ]
 }
@@ -1058,15 +1058,15 @@ resource "helm_release" "argocd" {
 resource "kubernetes_secret_v1" "repo_1_connect_ssh_key" {
   count = var.create_repo_1_connection_key_secret ? 1 : 0
   metadata {
-    name = var.repo_1_name
+    name      = var.repo_1_name
     namespace = "argocd"
     labels = {
       "argocd.argoproj.io/secret-type" = "repository"
     }
   }
   data = {
-    type = "git"
-    url = var.repo_1_url
+    type          = "git"
+    url           = var.repo_1_url
     sshPrivateKey = base64decode(var.repo_1_ssh_key)
   }
 }
@@ -1074,15 +1074,15 @@ resource "kubernetes_secret_v1" "repo_1_connect_ssh_key" {
 resource "kubernetes_secret_v1" "repo_2_connect_ssh_key" {
   count = var.create_repo_2_connection_key_secret ? 1 : 0
   metadata {
-    name = var.repo_2_name
+    name      = var.repo_2_name
     namespace = "argocd"
     labels = {
       "argocd.argoproj.io/secret-type" = "repository"
     }
   }
   data = {
-    type = "git"
-    url = var.repo_2_url
+    type          = "git"
+    url           = var.repo_2_url
     sshPrivateKey = base64decode(var.repo_2_ssh_key)
   }
 }
