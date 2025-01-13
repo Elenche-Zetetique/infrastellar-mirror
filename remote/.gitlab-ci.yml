@@ -30,12 +30,10 @@ image:
 
 default:
   before_script:
-  - pwd
   - cd ${TF_ROOT}
   - remote_dir=$(pwd)
-  - echo $remote_dir
   - >
-    terraform init 
+    gitlab-terraform init 
     -backend-config="address=https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/terraform/state/$TF_STATE_NAME" 
     -backend-config="lock_address=https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/terraform/state/$TF_STATE_NAME/lock" 
     -backend-config="unlock_address=https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/terraform/state/$TF_STATE_NAME/lock" 
@@ -50,14 +48,13 @@ preflight-tf-script:
   when: manual
   script:
   - cd $remote_dir
-  # - gitlab-terraform fmt
   - gitlab-terraform validate
 
 plan-tf-script:
   stage: plan
   when: manual
   script:
-  - gitlab-terraform plan -out=tfplan
+  - gitlab-terraform plan
   needs:
   - job: preflight-tf-script
 
@@ -65,7 +62,7 @@ apply-tf-script:
   stage: apply
   when: manual
   script:
-  - gitlab-terraform apply tfplan
+  - gitlab-terraform apply -auto-approve
   needs:
   - job: plan-tf-script
 
