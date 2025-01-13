@@ -5,7 +5,7 @@ stages:
 - destroy
 
 variables:
-  TF_ROOT: "/remote"
+  TF_ROOT: "remote"
   TF_VAR_argocd_certificate: ${argocd_certificate}
   TF_VAR_argocd_helm_chart_version: ${argocd_helm_chart_version}
   TF_VAR_argocd_hostname: ${argocd_hostname}
