@@ -1,0 +1,10 @@
+stages:
+- triggers
+
+trigger-pipeline-for-remote-infrastructure:
+  stage: triggers
+  trigger:
+    include: remote/.gitlab-ci.yml
+  rules:
+  - changes:
+    - remote/**/*
