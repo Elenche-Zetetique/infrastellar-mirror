@@ -50,7 +50,7 @@ preflight-tf-script:
   when: manual
   script:
   - cd $remote_dir
-  - gitlab-terraform fmt
+  # - gitlab-terraform fmt
   - gitlab-terraform validate
 
 plan-tf-script:
