@@ -100,12 +100,12 @@ variable "argocd_hostname" {
 }
 
 variable "repo_1_ssh_key" {
-  description = "Repo 1 SSH key"
+  description = "Repository #1 SSH key"
   type        = string
 }
 
 variable "repo_2_ssh_key" {
-  description = "Repo 2 SSH key"
+  description = "Repository #2 SSH key"
   type        = string
 }
 
@@ -120,12 +120,12 @@ variable "repo_2_name" {
 }
 
 variable "repo_1_url" {
-  description = "Repo 1 URL"
+  description = "Repository #1 URL"
   type        = string
 }
 
 variable "repo_2_url" {
-  description = "Repo 2 URL"
+  description = "Repository #2 URL"
   type        = string
 }
 
