@@ -11,6 +11,10 @@ spec:
     repoURL: git@gitlab.com:elenche-devops/son-of-argus.git
     targetRevision: main
     path: perceptiview
+    helm:
+      values: |
+        ingress:
+          class: alb
   destination:
     server: https://kubernetes.default.svc
     namespace: perceptiview
