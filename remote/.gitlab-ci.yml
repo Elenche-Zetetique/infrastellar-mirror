@@ -75,8 +75,8 @@ apply-tf-script:
   - gitlab-terraform apply -auto-approve
   needs:
   - job: plan-tf-script
- environment:
-   name: $TF_STATE_NAME
+  environment:
+    name: $TF_STATE_NAME
 
 destroy-tf-script:
   stage: destroy
