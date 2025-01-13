@@ -57,6 +57,9 @@ plan-tf-script:
   - gitlab-terraform plan
   needs:
   - job: preflight-tf-script
+  artifacts:
+    paths:
+    - ${remote_dir}/plan.cache
 
 apply-tf-script:
   stage: apply
