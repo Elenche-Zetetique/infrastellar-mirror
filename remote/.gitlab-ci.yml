@@ -28,12 +28,24 @@ variables:
 image:
   name: "$CI_TEMPLATE_REGISTRY_HOST/gitlab-org/terraform-images/releases/1.4:v1.0.0"
 
+default:
+  before_script:
+  - >
+    terraform init 
+    -backend-config="address=https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/terraform/state/$TF_STATE_NAME" 
+    -backend-config="lock_address=https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/terraform/state/$TF_STATE_NAME/lock" 
+    -backend-config="unlock_address=https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/terraform/state/$TF_STATE_NAME/lock" 
+    -backend-config="username=$username" 
+    -backend-config="password=$GITLAB_ACCESS_TOKEN" 
+    -backend-config="lock_method=POST" 
+    -backend-config="unlock_method=DELETE" 
+    -backend-config="retry_wait_min=5" 
+
 preflight-tf-script:
   stage: preflight
   when: manual
   script:
   - cd ${TF_ROOT}
-  - gitlab-terraform init
   - gitlab-terraform fmt
   - gitlab-terraform validate
 
