@@ -46,6 +46,7 @@ preflight-tf-script:
   stage: preflight
   when: manual
   script:
+  - cd ${TF_ROOT}
   - gitlab-terraform fmt
   - gitlab-terraform validate
 
