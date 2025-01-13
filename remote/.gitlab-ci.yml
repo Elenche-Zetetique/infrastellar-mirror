@@ -1,0 +1,59 @@
+stages:
+- preflight
+- plan
+- apply
+- destroy
+
+variables:
+  TF_VAR_argocd_certificate: ${argocd_certificate}
+  TF_VAR_argocd_helm_chart_version: ${argocd_helm_chart_version}
+  TF_VAR_argocd_hostname: ${argocd_hostname}
+  TF_VAR_AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION}
+  TF_VAR_aws_eks_cluster_name: ${aws_eks_cluster_name}
+  TF_VAR_aws_eks_cluster_version: ${aws_eks_cluster_version}
+  TF_VAR_aws_lbc_helm_chart_version: ${aws_lbc_helm_chart_version}
+  TF_VAR_developer_user: ${developer_user}
+  TF_VAR_env: ${env}
+  TF_VAR_hosted_zone_id: ${hosted_zone_id}
+  TF_VAR_manager_user: ${manager_user}
+  TF_VAR_repo_1_name: ${repo_1_name}
+  TF_VAR_repo_1_ssh_key: ${repo_1_ssh_key}
+  TF_VAR_repo_1_url: ${repo_1_url}
+  TF_VAR_repo_2_name: ${repo_2_name}
+  TF_VAR_repo_2_ssh_key: ${repo_2_ssh_key}
+  TF_VAR_repo_2_url: ${repo_2_url}
+
+image:
+  name: "$CI_TEMPLATE_REGISTRY_HOST/gitlab-org/terraform-images/releases/1.4:v1.0.0"
+
+preflight-tf-script:
+  stage: preflight
+  when: manual
+  script:
+  - gitlab-terraform fmt
+  - gitlab-terraform validate
+  - gitlab-terraform init
+
+plan-tf-script:
+  stage: plan
+  when: manual
+  script:
+  - gitlab-terraform plan -out=tfplan
+  needs:
+  - job: preflight-tf-script
+
+apply-tf-script:
+  stage: apply
+  when: manual
+  script:
+  - gitlab-terraform apply tfplan
+  needs:
+  - job: plan-tf-script
+
+destroy-tf-script:
+  stage: destroy
+  when: manual
+  script:
+  - gitlab-terraform destroy
+  needs:
+  - job: apply-tf-script
