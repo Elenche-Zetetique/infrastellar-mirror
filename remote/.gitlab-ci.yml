@@ -30,7 +30,10 @@ image:
 
 default:
   before_script:
+  - pwd
   - cd ${TF_ROOT}
+  - remote_dir=$(pwd)
+  - echo $remote_dir
   - >
     terraform init 
     -backend-config="address=https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/terraform/state/$TF_STATE_NAME" 
@@ -46,7 +49,7 @@ preflight-tf-script:
   stage: preflight
   when: manual
   script:
-  - cd ${TF_ROOT}
+  - cd $remote_dir
   - gitlab-terraform fmt
   - gitlab-terraform validate
 
