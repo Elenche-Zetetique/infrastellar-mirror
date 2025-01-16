@@ -25,11 +25,6 @@ variables:
   TF_VAR_repo_2_ssh_key: ${repo_2_ssh_key}
   TF_VAR_repo_2_url: ${repo_2_url}
 
-cache:
-  key: "${CI_PROJECT_ID}"
-  paths:
-  - ${CI_PROJECT_ID}/.terraform/
-
 image:
   name: "$CI_TEMPLATE_REGISTRY_HOST/gitlab-org/terraform-images/releases/1.4:v1.0.0"
 
@@ -64,9 +59,13 @@ plan-tf-script:
   - job: preflight-tf-script
   artifacts:
     paths:
-    - ${CI_PROJECT_ID}/plan.cache
+    - ${remote_dir}/plan.cache
     reports:
-      terraform: ${CI_PROJECT_ID}/plan.json
+      terraform: ${remote_dir}/plan.json
+  cache:
+    key: "${CI_PROJECT_ID}"
+    paths:
+    - ${remote_dir}/.terraform/
 
 apply-tf-script:
   stage: apply
@@ -87,3 +86,7 @@ destroy-tf-script:
   - job: apply-tf-script
   environment:
     name: $TF_STATE_NAME
+  cache:
+    key: "${CI_PROJECT_ID}"
+    paths:
+    - ${remote_dir}/.terraform/
