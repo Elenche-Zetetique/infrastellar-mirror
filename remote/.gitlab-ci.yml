@@ -76,6 +76,15 @@ apply-tf-script:
   - job: plan-tf-script
   environment:
     name: $TF_STATE_NAME
+  artifacts:
+    paths:
+    - ${remote_dir}/plan.cache
+    reports:
+      terraform: ${remote_dir}/plan.json
+  cache:
+    key: "${CI_PROJECT_ID}"
+    paths:
+    - ${remote_dir}/.terraform/
 
 destroy-tf-script:
   stage: destroy
@@ -86,6 +95,11 @@ destroy-tf-script:
   - job: apply-tf-script
   environment:
     name: $TF_STATE_NAME
+  artifacts:
+    paths:
+    - ${remote_dir}/plan.cache
+    reports:
+      terraform: ${remote_dir}/plan.json
   cache:
     key: "${CI_PROJECT_ID}"
     paths:
