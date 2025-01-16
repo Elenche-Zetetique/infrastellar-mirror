@@ -31,6 +31,7 @@ image:
 default:
   before_script:
   - cd ${TF_ROOT}
+  - echo $CI_PROJECT_DIR
   - remote_dir=$(pwd)
   - >
     gitlab-terraform init 
