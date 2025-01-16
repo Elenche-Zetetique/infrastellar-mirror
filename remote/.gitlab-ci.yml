@@ -5,7 +5,8 @@ stages:
 - destroy
 
 variables:
-  MAIN_PATH: "remote"
+  PATH_TO_SCRIPT: "remote"
+  MAIN_PATH: "${CI_PROJECT_DIR}/${PATH_TO_SCRIPT}"
   TF_VAR_argocd_certificate: ${argocd_certificate}
   TF_VAR_argocd_helm_chart_version: ${argocd_helm_chart_version}
   TF_VAR_argocd_hostname: ${argocd_hostname}
@@ -31,15 +32,12 @@ image:
 cache:
   key: "${CI_PROJECT_ID}"
   paths:
-  - ${remote_dir}/.terraform/
+  - .terraform/
 
 default:
   before_script:
-  - cd $CI_PROJECT_DIR
-  - cd $MAIN_PATH
+  - cd ${MAIN_PATH}
   - remote_dir=$(pwd)
-  - echo $remote_dir
-  - echo ${CI_PROJECT_DIR}/${MAIN_PATH}
   - >
     gitlab-terraform init 
     -backend-config="address=https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/terraform/state/$TF_STATE_NAME" 
@@ -55,50 +53,42 @@ preflight-tf-script:
   stage: preflight
   when: manual
   script:
-  - cd $remote_dir
+  - cd ${MAIN_PATH}
   - gitlab-terraform validate
 
 plan-tf-script:
   stage: plan
   when: manual
   script:
-  - cd $remote_dir
+  - cd ${MAIN_PATH}
   - gitlab-terraform plan
+  - gitlab-terraform plan-json
   needs:
   - job: preflight-tf-script
   artifacts:
     paths:
-    - ${remote_dir}/plan.cache
+    - plan.cache
     reports:
-      terraform: ${remote_dir}/plan.json
+      terraform: plan.json
 
 apply-tf-script:
   stage: apply
   when: manual
   script:
-  - cd $remote_dir
+  - cd ${MAIN_PATH}
   - gitlab-terraform apply -auto-approve
   needs:
   - job: plan-tf-script
   environment:
     name: $TF_STATE_NAME
-  artifacts:
-    paths:
-    - ${remote_dir}/plan.cache
-    reports:
-      terraform: ${remote_dir}/plan.json
 
 destroy-tf-script:
   stage: destroy
   when: manual
   script:
+  - cd ${MAIN_PATH}
   - gitlab-terraform destroy
   needs:
   - job: apply-tf-script
   environment:
     name: $TF_STATE_NAME
-  artifacts:
-    paths:
-    - ${remote_dir}/plan.cache
-    reports:
-      terraform: ${remote_dir}/plan.json
