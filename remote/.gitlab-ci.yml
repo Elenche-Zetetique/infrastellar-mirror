@@ -32,7 +32,7 @@ image:
 cache:
   key: "${CI_PROJECT_ID}"
   paths:
-  - .terraform/
+  - $PATH_TO_SCRIPT/.terraform/
 
 default:
   before_script:
@@ -61,21 +61,23 @@ plan-tf-script:
   when: manual
   script:
   - cd ${MAIN_PATH}
+  - ls -la
   - gitlab-terraform plan
   - gitlab-terraform plan-json
   needs:
   - job: preflight-tf-script
   artifacts:
     paths:
-    - plan.cache
+    - $PATH_TO_SCRIPT/plan.cache
     reports:
-      terraform: plan.json
+      terraform: $PATH_TO_SCRIPT/plan.json
 
 apply-tf-script:
   stage: apply
   when: manual
   script:
   - cd ${MAIN_PATH}
+  - ls -la
   - gitlab-terraform apply -auto-approve
   needs:
   - job: plan-tf-script
