@@ -4,7 +4,6 @@ stages:
 - apply
 - destroy
 
-
 variables:
   PATH_TO_SCRIPT: "remote"
   MAIN_PATH: "${CI_PROJECT_DIR}/${PATH_TO_SCRIPT}"
