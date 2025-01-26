@@ -37,7 +37,6 @@ cache:
 default:
   before_script:
   - cd ${MAIN_PATH}
-  - remote_dir=$(pwd)
   - >
     gitlab-terraform init 
     -backend-config="address=https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/terraform/state/$TF_STATE_NAME" 
@@ -61,7 +60,6 @@ plan-tf-script:
   when: manual
   script:
   - cd ${MAIN_PATH}
-  - ls -la
   - gitlab-terraform plan
   - gitlab-terraform plan-json
   needs:
@@ -76,9 +74,18 @@ apply-tf-script:
   stage: apply
   when: manual
   script:
+
+  # Install AWS CLI v2
+  - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+  - unzip awscliv2.zip
+  - sudo ./aws/install
+  - rm awscliv2.zip
+  - rf -rf ./aws
+
+  # Apply TF script
   - cd ${MAIN_PATH}
-  - ls -la
   - gitlab-terraform apply -auto-approve
+
   needs:
   - job: plan-tf-script
   environment:
