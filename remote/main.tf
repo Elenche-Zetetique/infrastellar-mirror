@@ -79,6 +79,30 @@ variable "argocd_certificate" {
   type        = string
 }
 
+variable "deploy_argocd_route53_record" {
+  description = "Flag to control ArgoCD Route53 record"
+  type        = bool
+  default     = true
+}
+
+variable "deploy_local_file_elb_hosted_zone_id" {
+  description = "Flag to 'deploy data.local_file' 'elb_hosted_zone_id'"
+  type        = bool
+  default     = true
+}
+
+variable "deploy_terraform_data_elb_hosted_zone_id" {
+  description = "Flag to 'deploy 'resource.terraform_data' 'extract_elb_hosted_zone_id'"
+  type        = bool
+  default     = true
+}
+
+variable "deploy_data_kubernetes_ingress_v1_argocd_ingress" {
+  description = "Flag to 'deploy 'data.kubernetes_ingress_v1' 'argocd_ingress'"
+  type        = bool
+  default     = true
+}
+
 variable "manager_user" {
   description = "User with manager privileges"
   type        = string
@@ -141,6 +165,27 @@ variable "aws_lbc_helm_chart_version" {
 
 variable "CI_PROJECT_ID" {
   description = "Project ID"
+  type        = string
+}
+
+variable "script_elb_hosted_zone_id" {
+  description = "Name of the script to extract a Hosted Zone ID of ArgoCD Load Balancer"
+  type        = string
+}
+
+variable "argocd_lb_name" {
+  description = "ArgoCD LoadBalancer name"
+  type        = string
+}
+
+variable "deploy_local_file_elb_hosted_zone_id" {
+  description = "Flag to 'deploy data.local_file' 'elb_hosted_zone_id'"
+  type        = bool
+  default     = true
+}
+
+variable "local_file_elb_hosted_zone_id" {
+  description = "Name of the local file to save a Hosted Zone ID of ArgoCD Load Balancer"
   type        = string
 }
 
@@ -1051,7 +1096,7 @@ resource "helm_release" "argocd" {
                 alb.ingress.kubernetes.io/backend-protocol: HTTP
                 alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":80}, {"HTTPS":443}]'
                 alb.ingress.kubernetes.io/ssl-redirect: '443'
-                alb.ingress.kubernetes.io/load-balancer-name: ez-lb
+                alb.ingress.kubernetes.io/load-balancer-name: ${var.argocd_lb_name}
                 alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:${var.AWS_DEFAULT_REGION}:${data.aws_caller_identity.current.account_id}:certificate/${var.argocd_certificate}
               aws:
                 serviceType: ClusterIP
@@ -1095,3 +1140,45 @@ resource "kubernetes_secret_v1" "repo_2_connect_ssh_key" {
   }
 }
 
+resource "time_sleep" "wait_10_minutes" {
+  destroy_duration = "10m"
+  depends_on       = [helm_release.argocd]
+}
+
+data "kubernetes_ingress_v1" "argocd_ingress" {
+  count = var.deploy_data_kubernetes_ingress_v1_argocd_ingress ? 1 : 0
+  metadata {
+    name      = "argocd-server"
+    namespace = "argocd"
+  }
+}
+
+resource "null_resource" "extract_elb_hosted_zone_id" {
+  count = var.deploy_terraform_data_elb_hosted_zone_id ? 1 : 0
+  provisioner "local-exec" {
+    command = "/bin/bash ${var.script_elb_hosted_zone_id} ${var.argocd_lb_name} ${var.local_file_elb_hosted_zone_id}"
+  }
+}
+
+data "local_file" "elb_hosted_zone_id" {
+  count = var.deploy_local_file_elb_hosted_zone_id ? 1 : 0
+  filename = "${var.local_file_elb_hosted_zone_id}"
+  depends_on  = [
+    null_resource.extract_elb_hosted_zone_id
+  ]
+}
+
+resource "aws_route53_record" "argoce_record" {
+  count = var.deploy_argocd_route53_record ? 1 : 0
+  zone_id = "${var.hosted_zone_id}"
+  name    = "${var.argocd_hostname}"
+  type    = "A"
+  alias {
+    name                   = data.kubernetes_ingress_v1.argocd_ingress[0].status.0.load_balancer.0.ingress.0.hostname
+    zone_id                = element(split("\n", data.local_file.elb_hosted_zone_id[0].content), 0)
+    evaluate_target_health = true
+  }
+  depends_on = [
+    null_resource.extract_elb_hosted_zone_id
+  ]
+}
