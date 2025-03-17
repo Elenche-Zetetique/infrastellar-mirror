@@ -67,4 +67,4 @@ This project is licensed under the [**Creative Commons Attribution-NonCommercial
 - No warranties or liability: The author is **not responsible** for any issues arising from use.
 
 ## Authors
-Maintained by **Elenche Zetetique**.
+Maintained by [**Elenche Zetetique**](https://elenche-zetetique.com/).
