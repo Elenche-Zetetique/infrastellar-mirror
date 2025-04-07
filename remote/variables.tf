@@ -171,12 +171,6 @@ variable "argocd_lb_name" {
   type        = string
 }
 
-variable "deploy_local_file_elb_hosted_zone_id" {
-  description = "Flag to 'deploy data.local_file' 'elb_hosted_zone_id'"
-  type        = bool
-  default     = true
-}
-
 variable "local_file_elb_hosted_zone_id" {
   description = "Name of the local file to save a Hosted Zone ID of ArgoCD Load Balancer"
   type        = string
