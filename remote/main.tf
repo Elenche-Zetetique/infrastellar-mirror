@@ -5,190 +5,6 @@ locals {
   zoneC = "${var.AWS_DEFAULT_REGION}c"
 }
 
-# Variables
-variable "deploy_metrics_server" {
-  description = "Flag to control metrics server deployment"
-  type        = bool
-  default     = false
-}
-
-variable "create_repo_1_connection_key_secret" {
-  description = "Flag to create a connection secret for repository #1"
-  type        = bool
-  default     = false
-}
-
-variable "create_repo_2_connection_key_secret" {
-  description = "Flag to create a connection secret for repository #2"
-  type        = bool
-  default     = false
-}
-
-variable "aws_eks_cluster_version" {
-  description = "EKS cluster version"
-  type        = string
-}
-
-variable "aws_eks_cluster_name" {
-  description = "EKS cluster name"
-  type        = string
-}
-
-variable "create_developer_user" {
-  description = "Flag to control developer user creation"
-  type        = bool
-  default     = true
-}
-
-variable "create_manager_user" {
-  description = "Flag to control manager user creation"
-  type        = bool
-  default     = true
-}
-
-variable "create_lbc" {
-  description = "Flag to load balancer controller deployment"
-  type        = bool
-  default     = true
-}
-
-variable "create_argocd" {
-  description = "Flag to ArgoCD deployment"
-  type        = bool
-  default     = true
-}
-
-variable "env" {
-  description = "Environment"
-  type        = string
-}
-
-variable "aws_lbc_sa" {
-  description = "Flag to load balancer controller deployment"
-  type        = string
-  default     = "aws-load-balancer-controller"
-}
-
-variable "hosted_zone_id" {
-  description = "Hosted zone ID"
-  type        = string
-}
-
-variable "argocd_certificate" {
-  description = "ArgoCD certificate"
-  type        = string
-}
-
-variable "deploy_argocd_route53_record" {
-  description = "Flag to control ArgoCD Route53 record"
-  type        = bool
-  default     = true
-}
-
-variable "deploy_local_file_elb_hosted_zone_id" {
-  description = "Flag to 'deploy data.local_file' 'elb_hosted_zone_id'"
-  type        = bool
-  default     = true
-}
-
-variable "deploy_terraform_data_elb_hosted_zone_id" {
-  description = "Flag to 'deploy 'resource.terraform_data' 'extract_elb_hosted_zone_id'"
-  type        = bool
-  default     = true
-}
-
-variable "deploy_data_kubernetes_ingress_v1_argocd_ingress" {
-  description = "Flag to 'deploy 'data.kubernetes_ingress_v1' 'argocd_ingress'"
-  type        = bool
-  default     = true
-}
-
-variable "manager_user" {
-  description = "User with manager privileges"
-  type        = string
-}
-
-variable "developer_user" {
-  description = "User with developer privileges"
-  type        = string
-}
-
-variable "argocd_helm_chart_version" {
-  description = "ArgoCD Helm chart version"
-  type        = string
-}
-
-variable "argocd_hostname" {
-  description = "ArgoCD hostname"
-  type        = string
-}
-
-variable "repo_1_ssh_key" {
-  description = "Repository #1 SSH key"
-  type        = string
-}
-
-variable "repo_2_ssh_key" {
-  description = "Repository #2 SSH key"
-  type        = string
-}
-
-variable "repo_1_name" {
-  description = "Repository #1 name"
-  type        = string
-}
-
-variable "repo_2_name" {
-  description = "Repository #2 name"
-  type        = string
-}
-
-variable "repo_1_url" {
-  description = "Repository #1 URL"
-  type        = string
-}
-
-variable "repo_2_url" {
-  description = "Repository #2 URL"
-  type        = string
-}
-
-variable "AWS_DEFAULT_REGION" {
-  description = "AWS region"
-  type        = string
-}
-
-variable "aws_lbc_helm_chart_version" {
-  description = "AWS LBC Helm chart version"
-  type        = string
-}
-
-variable "CI_PROJECT_ID" {
-  description = "Project ID"
-  type        = string
-}
-
-variable "script_elb_hosted_zone_id" {
-  description = "Name of the script to extract a Hosted Zone ID of ArgoCD Load Balancer"
-  type        = string
-}
-
-variable "argocd_lb_name" {
-  description = "ArgoCD LoadBalancer name"
-  type        = string
-}
-
-variable "deploy_local_file_elb_hosted_zone_id" {
-  description = "Flag to 'deploy data.local_file' 'elb_hosted_zone_id'"
-  type        = bool
-  default     = true
-}
-
-variable "local_file_elb_hosted_zone_id" {
-  description = "Name of the local file to save a Hosted Zone ID of ArgoCD Load Balancer"
-  type        = string
-}
-
 # Data
 data "aws_eks_cluster" "eks" {
   name = aws_eks_cluster.eks.name
@@ -200,48 +16,6 @@ data "aws_eks_cluster_auth" "eks" {
 
 data "tls_certificate" "eks" {
   url = aws_eks_cluster.eks.identity[0].oidc[0].issuer
-}
-
-# Providers
-provider "aws" {
-  region = var.AWS_DEFAULT_REGION
-}
-
-terraform {
-  required_version = ">= 1.0"
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.53"
-    }
-    kubernetes = {
-      source  = "hashicorp/kubernetes"
-      version = "2.35.0"
-    }
-    helm = {
-      source  = "hashicorp/helm"
-      version = "2.16.1"
-    }
-  }
-  backend "http" {
-    # address        = "https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/terraform/state/default"
-    # lock_address   = "https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/terraform/state/default/lock"
-    # unlock_address = "https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/terraform/state/default/lock"
-  }
-}
-
-provider "helm" {
-  kubernetes {
-    host                   = data.aws_eks_cluster.eks.endpoint
-    cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks.certificate_authority[0].data)
-    token                  = data.aws_eks_cluster_auth.eks.token
-  }
-}
-
-provider "kubernetes" {
-  host                   = data.aws_eks_cluster.eks.endpoint
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks.certificate_authority[0].data)
-  token                  = data.aws_eks_cluster_auth.eks.token
 }
 
 # Networking
@@ -266,8 +40,8 @@ resource "aws_subnet" "privateA" {
   cidr_block        = "10.0.0.0/19"
   availability_zone = local.zoneA
   tags = {
-    Name                                                             = "${var.env}-private-${local.zoneA}"
-    "kubernetes.io/role/internal-elb"                                = "1"
+    Name                                                           = "${var.env}-private-${local.zoneA}"
+    "kubernetes.io/role/internal-elb"                              = "1"
     "kubernetes.io/cluster/${var.env}-${var.aws_eks_cluster_name}" = "owned"
   }
 }
@@ -277,8 +51,8 @@ resource "aws_subnet" "privateB" {
   cidr_block        = "10.0.32.0/19"
   availability_zone = local.zoneB
   tags = {
-    Name                                                             = "${var.env}-private-${local.zoneB}"
-    "kubernetes.io/role/internal-elb"                                = "1"
+    Name                                                           = "${var.env}-private-${local.zoneB}"
+    "kubernetes.io/role/internal-elb"                              = "1"
     "kubernetes.io/cluster/${var.env}-${var.aws_eks_cluster_name}" = "owned"
   }
 }
@@ -325,8 +99,8 @@ resource "aws_subnet" "publicC" {
   availability_zone       = local.zoneC
   map_public_ip_on_launch = true
   tags = {
-    Name                                                             = "${var.env}-private-${local.zoneC}"
-    "kubernetes.io/role/elb"                                         = "1"
+    Name                                                           = "${var.env}-private-${local.zoneC}"
+    "kubernetes.io/role/elb"                                       = "1"
     "kubernetes.io/cluster/${var.env}-${var.aws_eks_cluster_name}" = "owned"
   }
 }
@@ -1182,3 +956,123 @@ resource "aws_route53_record" "argoce_record" {
     null_resource.extract_elb_hosted_zone_id
   ]
 }
+
+# Elastic Stack
+resource "helm_release" "logstash" {
+  count            = var.deploy_logstash ? 1 : 0
+  name             = "logstash"
+  repository       = "https://helm.elastic.co/elastic"
+  chart            = "logstash"
+  namespace        = "elastic-stack"
+  version          = "8.5.1"
+  create_namespace = true
+  values = [
+    <<-EOT
+          logstashPipeline:
+            logstash.conf: |
+              input {
+                beats {
+                  port => 5044
+                }
+              }
+              output { elasticsearch { hosts => "http://elasticsearch-master:9200" } }
+
+          service:
+            annotations: {}
+            type: ClusterIP
+            loadBalancerIP: ""
+            ports:
+              - name: beats
+                port: 5044
+                protocol: TCP
+                targetPort: 5044
+              - name: http
+                port: 8080
+                protocol: TCP
+                targetPort: 8080
+      EOT
+  ]
+  depends_on = [
+    helm_release.aws_lbc
+  ]
+}
+
+resource "helm_release" "filebeat" {
+  count            = var.deploy_filebeat ? 1 : 0
+  name             = "filebeat"
+  repository       = "https://helm.elastic.co/elastic"
+  chart            = "filebeat"
+  namespace        = "elastic-stack"
+  version          = "7.15.0"
+  create_namespace = true
+  values = [
+    <<-EOT
+          filebeatConfig:
+            filebeat.yml: |
+              filebeat.inputs:
+              - type: container
+                paths:
+                  - /var/log/containers/*.log
+                processors:
+                - add_kubernetes_metadata:
+                    host: ${NODE_NAME}
+                    matchers:
+                    - logs_path:
+                        logs_path: "/var/log/containers/"
+
+              output.logstash:
+                hosts: ["logstash-logstash:5044"]
+      EOT
+  ]
+  depends_on = [
+    helm_release.aws_lbc
+  ]
+}
+
+resource "helm_release" "elasticsearch" {
+  count            = var.deploy_elasticsearch ? 1 : 0
+  name             = "elasticsearch"
+  repository       = "https://helm.elastic.co/elastic"
+  chart            = "elasticsearch"
+  namespace        = "elastic-stack"
+  version          = "7.15.0"
+  create_namespace = true
+  set {
+    name  = "antiAffinity"
+    value = "soft"
+  }
+  depends_on = [
+    helm_release.aws_lbc
+  ]
+}
+
+resource "helm_release" "kibana" {
+  count            = var.deploy_kibana ? 1 : 0
+  name             = "kibana"
+  repository       = "https://helm.elastic.co/elastic"
+  chart            = "kibana"
+  namespace        = "elastic-stack"
+  version          = "7.15.0"
+  create_namespace = true
+  values = [
+    <<-EOT
+          ingress:
+            enabled: true
+            annotations:
+              kubernetes.io/ingress.class: nginx
+              # kubernetes.io/tls-acme: "true"
+            hosts:
+              - host: kibana.local
+                paths:
+                  - path: /
+            tls: []
+            #  - secretName: chart-example-tls
+            #    hosts:
+            #      - chart-example.local
+      EOT
+  ]
+  depends_on = [
+    helm_release.aws_lbc
+  ]
+}
+
