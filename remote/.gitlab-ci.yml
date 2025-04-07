@@ -30,7 +30,8 @@ variables:
   TF_VAR_script_elb_hosted_zone_id: ${script_elb_hosted_zone_id}
 
 image:
-  name: "$CI_TEMPLATE_REGISTRY_HOST/gitlab-org/terraform-images/releases/1.4:v1.0.0"
+  # name: "$CI_TEMPLATE_REGISTRY_HOST/gitlab-org/terraform-images/releases/1.4:v1.0.0"
+  name: "${CI_TEMPLATE_REGISTRY_HOST}/gitlab-org/terraform-images/stable:latest"
 
 cache:
   key: "${CI_PROJECT_ID}"
@@ -86,8 +87,8 @@ apply-tf-script:
   - rm -rf ./aws
 
   # install APT
-  - curl -o apt.deb http://security.ubuntu.com/ubuntu/pool/main/a/apt/apt_1.4_amd64.deb
-  - dpkg -i apt.deb
+  # - curl -o apt.deb http://security.ubuntu.com/ubuntu/pool/main/a/apt/apt_1.4_amd64.deb
+  # - dpkg -i apt.deb
 
   # Install JQ
   - apt-get install -y jq
