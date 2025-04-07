@@ -79,11 +79,15 @@ apply-tf-script:
   script:
 
   # Install AWS CLI v2
-  - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+  - curl -o awscliv2.zip https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
   - unzip awscliv2.zip
   - ./aws/install
   - rm awscliv2.zip
   - rm -rf ./aws
+
+  # install APT
+  - curl -o apt.deb http://security.ubuntu.com/ubuntu/pool/main/a/apt/apt_1.4_amd64.deb
+  - dpkg -i apt.deb
 
   # Install JQ
   - apt-get install -y jq
