@@ -75,7 +75,7 @@ variable "argocd_certificate" {
 variable "deploy_argocd_route53_record" {
   description = "Flag to control ArgoCD Route53 record"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "deploy_local_file_elb_hosted_zone_id" {
