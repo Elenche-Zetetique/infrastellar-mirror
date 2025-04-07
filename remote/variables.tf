@@ -93,7 +93,7 @@ variable "deploy_terraform_data_elb_hosted_zone_id" {
 variable "deploy_data_kubernetes_ingress_v1_argocd_ingress" {
   description = "Flag to 'deploy 'data.kubernetes_ingress_v1' 'argocd_ingress'"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "manager_user" {
