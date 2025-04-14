@@ -41,8 +41,9 @@ cache:
 default:
   before_script:
   - cd ${MAIN_PATH}
+  # -migrate-state
   - >
-    terraform init -migrate-state
+    terraform init -recofigure
     -backend-config="address=https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/terraform/state/$TF_STATE_NAME" 
     -backend-config="lock_address=https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/terraform/state/$TF_STATE_NAME/lock" 
     -backend-config="unlock_address=https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/terraform/state/$TF_STATE_NAME/lock" 
