@@ -1012,7 +1012,7 @@ resource "helm_release" "filebeat" {
               filebeat.inputs:
               - type: container
                 paths:
-                  - /var/log/containers/*.log
+                - /var/log/containers/*.log
                 processors:
                 - add_kubernetes_metadata:
                     host: $\{NODE_NAME\}

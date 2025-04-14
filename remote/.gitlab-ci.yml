@@ -29,10 +29,8 @@ variables:
   TF_VAR_repo_2_url: ${repo_2_url}
   TF_VAR_script_elb_hosted_zone_id: ${script_elb_hosted_zone_id}
 
-
 image:
-  # name: "$CI_TEMPLATE_REGISTRY_HOST/gitlab-org/terraform-images/releases/1.4:v1.0.0"
-  name: "${CI_TEMPLATE_REGISTRY_HOST}/gitlab-org/terraform-images/stable:latest"
+  name: "${CI_TEMPLATE_REGISTRY_HOST}/elenche-devops/infrastellar/tf-base:1.0.2"
 
 cache:
   key: "${CI_PROJECT_ID}"
@@ -43,7 +41,7 @@ default:
   before_script:
   - cd ${MAIN_PATH}
   - >
-    gitlab-terraform init 
+    terraform init 
     -backend-config="address=https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/terraform/state/$TF_STATE_NAME" 
     -backend-config="lock_address=https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/terraform/state/$TF_STATE_NAME/lock" 
     -backend-config="unlock_address=https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/terraform/state/$TF_STATE_NAME/lock" 
@@ -58,15 +56,15 @@ preflight-tf-script:
   when: manual
   script:
   - cd ${MAIN_PATH}
-  - gitlab-terraform validate
+  - terraform validate
 
 plan-tf-script:
   stage: plan
   when: manual
   script:
   - cd ${MAIN_PATH}
-  - gitlab-terraform plan
-  - gitlab-terraform plan-json
+  - terraform plan
+  - terraform plan-json
   needs:
   - job: preflight-tf-script
   artifacts:
@@ -80,23 +78,9 @@ apply-tf-script:
   when: manual
   script:
 
-  # Install AWS CLI v2
-  - curl -o awscliv2.zip https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
-  - unzip awscliv2.zip
-  - ./aws/install
-  - rm awscliv2.zip
-  - rm -rf ./aws
-
-  # install APT
-  # - curl -o apt.deb http://security.ubuntu.com/ubuntu/pool/main/a/apt/apt_1.4_amd64.deb
-  # - dpkg -i apt.deb
-
-  # Install JQ
-  - apt-get install -y jq
-
   # Apply TF script
   - cd ${MAIN_PATH}
-  - gitlab-terraform apply -auto-approve
+  - terraform apply -auto-approve
 
   needs:
   - job: plan-tf-script
@@ -108,7 +92,7 @@ destroy-tf-script:
   when: manual
   script:
   - cd ${MAIN_PATH}
-  - gitlab-terraform destroy
+  - terraform destroy
   needs:
   - job: apply-tf-script
   environment:
