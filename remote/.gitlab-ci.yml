@@ -70,7 +70,7 @@ plan-tf-script:
   - pwd
   - terraform plan -out=plan.cache
   - ls -la
-  - terraform show -json plan.cache > $PATH_TO_SCRIPT/plan.json
+  - terraform show -json plan.cache > plan.json
   needs:
   - job: preflight-tf-script
   artifacts:
