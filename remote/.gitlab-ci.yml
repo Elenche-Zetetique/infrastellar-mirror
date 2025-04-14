@@ -65,8 +65,8 @@ plan-tf-script:
   when: manual
   script:
   - cd ${MAIN_PATH}
-  - terraform plan
-  - terraform plan-json
+  - terraform plan -out=plan.cache
+  - terraform show -json plan.cache > $PATH_TO_SCRIPT/plan.json
   needs:
   - job: preflight-tf-script
   artifacts:
