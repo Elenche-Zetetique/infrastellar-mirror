@@ -30,7 +30,7 @@ variables:
   TF_VAR_script_elb_hosted_zone_id: ${script_elb_hosted_zone_id}
 
 image:
-  name: "${CI_TEMPLATE_REGISTRY_HOST}/elenche-devops/infrastellar/tf-base:1.0.2"
+  name: "${CI_TEMPLATE_REGISTRY_HOST}/elenche-devops/infrastellar/tf-base:1.0.3"
 
 cache:
   key: "${CI_PROJECT_ID}"
