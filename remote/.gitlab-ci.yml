@@ -58,14 +58,18 @@ preflight-tf-script:
   when: manual
   script:
   - cd ${MAIN_PATH}
+  - pwd
   - terraform validate
+  - ls -la
 
 plan-tf-script:
   stage: plan
   when: manual
   script:
   - cd ${MAIN_PATH}
+  - pwd
   - terraform plan -out=plan.cache
+  - ls -la
   - terraform show -json plan.cache > $PATH_TO_SCRIPT/plan.json
   needs:
   - job: preflight-tf-script
